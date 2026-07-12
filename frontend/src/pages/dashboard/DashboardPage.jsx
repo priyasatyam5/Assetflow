@@ -1,3 +1,4 @@
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { FiBox, FiGrid, FiUsers, FiShield, FiActivity, FiLogOut, FiSearch, FiBell, FiPlus, FiArrowUpRight } from 'react-icons/fi';
 import { NAV_ITEMS } from '../../utils/mockData.js';
@@ -97,14 +98,20 @@ export default function DashboardPage() {
 
             <nav className="space-y-2">
               {NAV_ITEMS.map((item) => (
-                <button
+                <NavLink
                   key={item.label}
-                  type="button"
-                  className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-600 transition-all hover:bg-slate-100 hover:text-ink dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all ${
+                      isActive
+                        ? 'bg-primary/10 text-primary dark:text-primary'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-ink dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'
+                    }`
+                  }
                 >
                   <item.icon className="text-base" />
                   <span>{item.label}</span>
-                </button>
+                </NavLink>
               ))}
             </nav>
           </aside>

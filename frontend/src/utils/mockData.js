@@ -31,7 +31,7 @@ export const NAV_ITEMS = [
   { label: 'Dashboard', icon: FiGrid, path: '/dashboard' },
   { label: 'Organization Setup', icon: FiLayers, path: '/organization-setup' },
   { label: 'Asset Directory', icon: FiBox, path: '/assets' },
-  { label: 'Allocation & Transfer', icon: FiRepeat, path: '/allocation-transfer' },
+  { label: 'Allocation & Transfer', icon: FiRepeat, path: '/allocation' },
   { label: 'Resource Booking', icon: FiCalendar, path: '/resource-booking' },
   { label: 'Maintenance', icon: FiTool, path: '/maintenance' },
   { label: 'Audit', icon: FiShield, path: '/audit' },
@@ -99,7 +99,7 @@ export const STAT_CARDS = [
 
 export const QUICK_ACTIONS = [
   { key: 'register', label: 'Register Asset', icon: FiPlusSquare, color: 'text-primary', path: '/assets/register' },
-  { key: 'allocate', label: 'Allocate Asset', icon: FiSend, color: 'text-accent', path: '/allocation-transfer' },
+  { key: 'allocate', label: 'Allocate Asset', icon: FiSend, color: 'text-accent', path: '/allocation' },
   { key: 'book', label: 'Book Resource', icon: FiCalendar, color: 'text-violet-600', path: '/resource-booking' },
   { key: 'maintenance', label: 'Raise Maintenance Request', icon: FiTool, color: 'text-amber-600', path: '/maintenance/new' },
   { key: 'qr', label: 'Generate QR Code', icon: FiCode, color: 'text-rose-600', path: '/assets/qr' },
