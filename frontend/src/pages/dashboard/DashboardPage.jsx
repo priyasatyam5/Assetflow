@@ -61,7 +61,10 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 mb-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 mb-6 min-w-0">
+        {/* Using fixed column counts at breakpoints for consistent layout;
+            xl:grid-cols-6 fits comfortably: at 1280px with sidebar (264px),
+            content is ~1016px = ~156px per card after gaps. */}
         {loading
           ? Array.from({ length: 6 }).map((_, i) => <StatCardSkeleton key={i} />)
           : STAT_CARDS.map((stat, i) => <StatCard key={stat.key} {...stat} delay={i * 0.05} />)}
@@ -73,7 +76,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 mb-6">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 mb-6 min-w-0">
         {loading ? (
           <>
             <ChartCardSkeleton />
@@ -90,7 +93,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Activity + Notifications */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 mb-6">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 mb-6 min-w-0">
         <div className="lg:col-span-7">
           <ActivityTimeline />
         </div>
