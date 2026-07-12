@@ -1,16 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FiPackage,
   FiUser,
   FiCalendar,
   FiArrowRight,
 } from "react-icons/fi";
+import apiClient from "../../services/apiClient.js";
 
 export default function AssetAllocationPage() {
   const [asset, setAsset] = useState("");
   const [employee, setEmployee] = useState("");
   const [department, setDepartment] = useState("");
   const [returnDate, setReturnDate] = useState("");
+
+  const [assetsList, setAssetsList] = useState([]);
+  const [employeesList, setEmployeesList] = useState([]);
+  const [departmentsList, setDepartmentsList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchOptions = async () => {
+    try {
+      const [assetsRes, usersRes, deptsRes] = await Promise.all([
+        apiClient.get("/assets"),
+        apiClient.get("/users"),
+        apiClient.get("/departments"),
+      ]);
+      setAssetsList(assetsRes.data || []);
+      setEmployeesList(usersRes.data || []);
+      setDepartmentsList(deptsRes.data || []);
+    } catch (err) {
+      console.error("Failed to load options:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOptions();
+  }, []);
 
   return (
     <div className="min-h-screen bg-surface dark:bg-surface-dark p-8">
@@ -46,12 +73,15 @@ export default function AssetAllocationPage() {
                 <select
                   value={asset}
                   onChange={(e) => setAsset(e.target.value)}
-                  className="w-full rounded-xl border px-10 py-3"
+                  className="w-full rounded-xl border px-10 py-3 bg-white dark:bg-slate-800 text-ink dark:text-white"
+                  disabled={loading}
                 >
                   <option value="">Select Asset</option>
-                  <option>Laptop AF-0114</option>
-                  <option>Monitor AF-0201</option>
-                  <option>Printer AF-0150</option>
+                  {assetsList.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.name} ({a.assetTag}) - {a.status}
+                    </option>
+                  ))}
                 </select>
 
               </div>
@@ -71,13 +101,19 @@ export default function AssetAllocationPage() {
 
                 <select
                   value={employee}
-                  onChange={(e) => setEmployee(e.target.value)}
-                  className="w-full rounded-xl border px-10 py-3"
+                  onChange={(e) => {
+                    setEmployee(e.target.value);
+                    if (e.target.value) setDepartment(""); // mutual exclusion
+                  }}
+                  className="w-full rounded-xl border px-10 py-3 bg-white dark:bg-slate-800 text-ink dark:text-white"
+                  disabled={loading}
                 >
                   <option value="">Select Employee</option>
-                  <option>Priya</option>
-                  <option>Raj</option>
-                  <option>Kiran</option>
+                  {employeesList.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.name} ({emp.role})
+                    </option>
+                  ))}
                 </select>
 
               </div>
@@ -94,13 +130,19 @@ export default function AssetAllocationPage() {
 
               <select
                 value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                className="w-full rounded-xl border px-4 py-3"
+                onChange={(e) => {
+                  setDepartment(e.target.value);
+                  if (e.target.value) setEmployee(""); // mutual exclusion
+                }}
+                className="w-full rounded-xl border px-4 py-3 bg-white dark:bg-slate-800 text-ink dark:text-white"
+                disabled={loading}
               >
                 <option value="">Select Department</option>
-                <option>Engineering</option>
-                <option>HR</option>
-                <option>Finance</option>
+                {departmentsList.map((dep) => (
+                  <option key={dep.id} value={dep.id}>
+                    {dep.name}
+                  </option>
+                ))}
               </select>
 
             </div>
@@ -121,7 +163,7 @@ export default function AssetAllocationPage() {
                   type="date"
                   value={returnDate}
                   onChange={(e) => setReturnDate(e.target.value)}
-                  className="w-full rounded-xl border px-10 py-3"
+                  className="w-full rounded-xl border px-10 py-3 bg-white dark:bg-slate-800 text-ink dark:text-white"
                 />
 
               </div>
@@ -131,33 +173,44 @@ export default function AssetAllocationPage() {
           </div>
 
           <button
-  onClick={async () => {
-    try {
-      const response = await fetch("http://localhost:3000/api/allocations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          asset,
-          employee,
-          department,
-          returnDate,
-        }),
-      });
+            onClick={async () => {
+              if (!asset) {
+                alert("Please select an asset.");
+                return;
+              }
+              if (!employee && !department) {
+                alert("Please select an employee or department to allocate the asset to.");
+                return;
+              }
+              try {
+                const response = await apiClient.post("/allocations", {
+                  asset,
+                  employee,
+                  department,
+                  returnDate,
+                });
 
-      const data = await response.json();
-      alert("Asset allocated successfully!");
-      console.log(data);
-    } catch (error) {
-      console.error("Error allocating asset:", error);
-      alert("Failed to allocate asset");
-    }
-  }}
-  className="mt-8 flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-6 py-3"
->
-  <FiArrowRight />
-  Allocate Asset
-</button>
-
+                alert("Asset allocated successfully!");
+                console.log(response.data);
+                
+                // Clear selection
+                setAsset("");
+                setEmployee("");
+                setDepartment("");
+                setReturnDate("");
+                
+                // Reload list to refresh asset statuses
+                fetchOptions();
+              } catch (error) {
+                console.error("Error allocating asset:", error);
+                alert("Failed to allocate asset: " + (error.response?.data?.error || error.message));
+              }
+            }}
+            className="mt-8 flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-6 py-3"
+          >
+            <FiArrowRight />
+            Allocate Asset
+          </button>
 
         </div>
 

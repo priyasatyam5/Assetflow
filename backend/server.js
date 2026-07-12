@@ -4,6 +4,20 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 const allocationRoutes = require('./routes/allocation'); 
+
+// New entities routes
+const assetRoutes = require('./routes/assets');
+const departmentRoutes = require('./routes/departments');
+const userRoutes = require('./routes/users');
+const maintenanceRoutes = require('./routes/maintenance');
+
+// ✅ new audit routes
+const auditCycleRoutes = require('./routes/auditCycles');
+const auditLogRoutes = require('./routes/auditLogs');
+const auditResultRoutes = require('./routes/auditResults');
+const auditDiscrepancyRoutes = require('./routes/auditDiscrepancies');
+const auditAuditorRoutes = require('./routes/auditAuditors');
+
 const { sequelize } = require('./db');
 
 dotenv.config();
@@ -16,9 +30,22 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+
+// existing routes
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/allocations', allocationRoutes); 
+app.use('/api/assets', assetRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/maintenance-requests', maintenanceRoutes);
+
+// ✅ mount audit routes
+app.use('/api/audit-cycles', auditCycleRoutes);
+app.use('/api/audit-logs', auditLogRoutes);
+app.use('/api/audit-results', auditResultRoutes);
+app.use('/api/audit-discrepancies', auditDiscrepancyRoutes);
+app.use('/api/audit-auditors', auditAuditorRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Assetflow backend is running' });
@@ -28,8 +55,10 @@ const startServer = async (port) => {
   try {
     await sequelize.authenticate();
     console.log('Database connection established.');
+    global.dbConnected = true;
   } catch (error) {
     console.warn('Database connection unavailable, continuing without it:', error.message);
+    global.dbConnected = false;
   }
 
   const server = app.listen(port, '0.0.0.0', () => {

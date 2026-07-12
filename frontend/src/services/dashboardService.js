@@ -1,4 +1,4 @@
-﻿import apiClient from './apiClient.js';
+import apiClient from './apiClient.js';
 import {
   STAT_CARDS,
   ASSET_DISTRIBUTION,
@@ -15,7 +15,7 @@ import {
  * the Express backend is live — flip MOCK_MODE to false and point
  * VITE_API_BASE_URL at the real API to switch over with no component changes.
  */
-const MOCK_MODE = true;
+const MOCK_MODE = false;
 
 function mockDelay(ms = 600) {
   return new Promise((resolve) => setTimeout(resolve, ms));
