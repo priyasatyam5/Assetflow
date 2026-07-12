@@ -501,10 +501,10 @@ export default function AssetAllocationPage() {
                   <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                     {entry.date
                       ? new Date(entry.date).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })
                       : 'Unknown date'}
                     {entry.returnCondition ? ' - condition: ' + entry.returnCondition : ''}
                     {entry.returnNotes ? ' - ' + entry.returnNotes : ''}
