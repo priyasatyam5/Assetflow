@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import DashboardPage from './pages/dashboard/DashboardPage.jsx';
+import AssetAllocationPage from "./pages/allocation/AssetAllocationPage";
 
 // Protect routes that require authentication
 function ProtectedRoute({ children }) {
@@ -41,6 +42,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+   <Route
+  path="/allocation"
+  element={
+    <ProtectedRoute>
+      <AssetAllocationPage />
+    </ProtectedRoute>
+  }
+/>
+      
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

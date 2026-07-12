@@ -9,7 +9,10 @@
     "example:query": "node example-query.js",
     "db:sync": "node -e \"require('./db').syncDatabase().then(() => console.log('Database synced')).catch((error) => { console.error(error); process.exit(1); })\""
   },
-  "keywords": ["node", "backend"],
+  "keywords": [
+    "node",
+    "backend"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
