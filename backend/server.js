@@ -3,7 +3,12 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
-const allocationRoutes = require('./routes/allocation'); 
+const allocationRoutes = require('./routes/allocation');
+const { transferRouter } = require('./routes/allocation');
+const auditRoutes = require('./routes/audit');
+const reportRoutes = require('./routes/reports');
+const notificationRoutes = require('./routes/notificationsRoute');
+const allocationRoutes = require('./routes/allocation');
 
 // New entities routes
 const assetRoutes = require('./routes/assets');
@@ -34,7 +39,12 @@ app.use(express.json());
 // existing routes
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/allocations', allocationRoutes); 
+app.use('/api/allocations', allocationRoutes);
+app.use('/api/transfer-requests', transferRouter);
+app.use('/api/audit-cycles', auditRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/allocations', allocationRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/users', userRoutes);

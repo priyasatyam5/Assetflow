@@ -29,15 +29,15 @@
 
 export const NAV_ITEMS = [
   { label: 'Dashboard', icon: FiGrid, path: '/dashboard' },
-  { label: 'Organization Setup', icon: FiLayers, path: '/organization-setup' },
-  { label: 'Asset Directory', icon: FiBox, path: '/assets' },
-  { label: 'Allocation & Transfer', icon: FiRepeat, path: '/allocation' },
-  { label: 'Resource Booking', icon: FiCalendar, path: '/resource-booking' },
-  { label: 'Maintenance', icon: FiTool, path: '/maintenance' },
-  { label: 'Audit', icon: FiShield, path: '/audit' },
-  { label: 'Reports', icon: FiBarChart2, path: '/reports' },
-  { label: 'Notifications', icon: FiBell, path: '/notifications' },
-  { label: 'Settings', icon: FiSettings, path: '/settings' },
+  { label: 'Organization Setup', icon: FiLayers, path: '/dashboard/organization-setup' },
+  { label: 'Asset Directory', icon: FiBox, path: '/dashboard/assets' },
+  { label: 'Allocation & Transfer', icon: FiRepeat, path: '/dashboard/allocation' },
+  { label: 'Resource Booking', icon: FiCalendar, path: '/dashboard/resource-booking' },
+  { label: 'Maintenance', icon: FiTool, path: '/dashboard/maintenance' },
+  { label: 'Audit', icon: FiShield, path: '/dashboard/audit' },
+  { label: 'Reports', icon: FiBarChart2, path: '/dashboard/reports' },
+  { label: 'Notifications', icon: FiBell, path: '/dashboard/notifications' },
+  { label: 'Settings', icon: FiSettings, path: '/dashboard/settings' },
 ];
 
 export const STAT_CARDS = [
@@ -99,7 +99,7 @@ export const STAT_CARDS = [
 
 export const QUICK_ACTIONS = [
   { key: 'register', label: 'Register Asset', icon: FiPlusSquare, color: 'text-primary', path: '/assets/register' },
-  { key: 'allocate', label: 'Allocate Asset', icon: FiSend, color: 'text-accent', path: '/allocation' },
+  { key: 'allocate', label: 'Allocate Asset', icon: FiSend, color: 'text-accent', path: '/dashboard/allocation' },
   { key: 'book', label: 'Book Resource', icon: FiCalendar, color: 'text-violet-600', path: '/resource-booking' },
   { key: 'maintenance', label: 'Raise Maintenance Request', icon: FiTool, color: 'text-amber-600', path: '/maintenance/new' },
   { key: 'qr', label: 'Generate QR Code', icon: FiCode, color: 'text-rose-600', path: '/assets/qr' },

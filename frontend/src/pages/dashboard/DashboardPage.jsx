@@ -1,6 +1,5 @@
 ﻿import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import DashboardLayout from '../../layouts/DashboardLayout.jsx';
 import StatCard from '../../components/common/StatCard.jsx';
 import { StatCardSkeleton, ChartCardSkeleton } from '../../components/common/Loader.jsx';
 import { ToastContainer } from '../../components/common/Toast.jsx';
@@ -40,7 +39,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <DashboardLayout>
+    <>
       <ToastContainer toasts={toasts} onClose={dismissToast} />
 
       {/* Page header */}
@@ -62,9 +61,6 @@ export default function DashboardPage() {
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 mb-6 min-w-0">
-        {/* Using fixed column counts at breakpoints for consistent layout;
-            xl:grid-cols-6 fits comfortably: at 1280px with sidebar (264px),
-            content is ~1016px = ~156px per card after gaps. */}
         {loading
           ? Array.from({ length: 6 }).map((_, i) => <StatCardSkeleton key={i} />)
           : STAT_CARDS.map((stat, i) => <StatCard key={stat.key} {...stat} delay={i * 0.05} />)}
@@ -103,6 +99,6 @@ export default function DashboardPage() {
       </div>
 
       <UpcomingReturns />
-    </DashboardLayout>
+    </>
   );
 }
