@@ -2,7 +2,7 @@
 
 ## Prerequisites
 - Node.js installed
-- MySQL server running
+- Either a local MySQL server or a hosted MySQL database
 - A MySQL database created (for example, `assetflow`)
 
 ## Setup
@@ -14,14 +14,25 @@
    ```bash
    npm install
    ```
-3. Update the environment variables in `.env`:
+3. Create a `.env` file with either a connection URL or local credentials:
    ```env
+   # Option 1: hosted database URL
+   DATABASE_URL=mysql://username:password@host:3306/database_name
+   DB_SSL=true
+
+   # Option 2: local MySQL
    HOST=localhost
    USER=root
    PASSWORD=your_password
    DATABASE=assetflow
    PORT=3306
    ```
+
+## Create tables
+Run:
+```bash
+npm run db:sync
+```
 
 ## Run the backend
 Start the server:

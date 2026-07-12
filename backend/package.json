@@ -6,13 +6,15 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "example:query": "node example-query.js"
+    "example:query": "node example-query.js",
+    "db:sync": "node -e \"require('./db').syncDatabase().catch((error) => { console.error(error); process.exit(1); })\""
   },
   "keywords": ["node", "backend"],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.4.0",
-    "mysql2": "^3.12.0"
+    "mysql2": "^3.12.0",
+    "sequelize": "^6.37.3"
   }
 }

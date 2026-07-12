@@ -1,17 +1,36 @@
-const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
+const { Sequelize } = require('sequelize');
 
 dotenv.config();
 
-const pool = mysql.createPool({
-  host: process.env.HOST,
-  user: process.env.USER,
-  password: process.env.PASSWORD,
-  database: process.env.DATABASE,
+const connectionString = process.env.DATABASE_URL || process.env.MYSQL_URL || process.env.CLEARDB_DATABASE_URL || process.env.JAWSDB_URL;
+
+const sequelize = new Sequelize(connectionString || {
+  host: process.env.HOST || 'localhost',
   port: Number(process.env.PORT || 3306),
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+  username: process.env.USER || process.env.USERNAME || 'root',
+  password: process.env.PASSWORD || '',
+  database: process.env.DATABASE || 'assetflow',
+  dialect: 'mysql',
+  logging: false,
+  dialectOptions: process.env.DB_SSL === 'true' ? {
+    ssl: { rejectUnauthorized: false },
+  } : {},
+  pool: {
+    max: 10,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
+  },
 });
 
-module.exports = pool;
+const syncDatabase = async () => {
+  const { default: models } = require('./models');
+  await sequelize.sync({ alter: false });
+  return models;
+};
+
+module.exports = {
+  sequelize,
+  syncDatabase,
+};

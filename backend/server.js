@@ -1,4 +1,5 @@
 const http = require('http');
+const { syncDatabase } = require('./db');
 
 const basePort = Number(process.env.PORT) || 3000;
 const server = http.createServer((req, res) => {
