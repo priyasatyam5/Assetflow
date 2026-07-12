@@ -1,4 +1,4 @@
-# AssetFlow — Enterprise Asset & Resource Management (Frontend)
+﻿# AssetFlow — Enterprise Asset & Resource Management (Frontend)
 
 Frontend-only React app for the AssetFlow hackathon project. Backend
 (Node.js/Express) is being built separately — this repo only prepares
@@ -68,4 +68,3 @@ the Express API is ready:
 
 1. Set `VITE_API_BASE_URL` in a `.env` file.
 2. Flip `MOCK_MODE` to `false` in `authService.js`.
-

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -39,7 +39,7 @@ export default function LoginPage() {
         password: values.password,
         remember: !!values.remember,
       });
-      showToast('Welcome back! Redirecting to your dashboard…', 'success');
+      showToast('Welcome back! Redirecting to your dashboardâ€¦', 'success');
       navigate('/dashboard', { replace: true });
     } catch (err) {
       showToast(err?.message || 'Incorrect email or password.', 'error');
@@ -118,7 +118,7 @@ export default function LoginPage() {
               </h2>
               <p className="max-w-sm text-sm text-white/80">
                 One workspace to register, allocate, transfer, and maintain every asset and resource
-                across your organization — in real time.
+                across your organization â€” in real time.
               </p>
               <div className="flex gap-6 border-t border-white/20 pt-5">
                 {STATS.map((s) => (
@@ -229,7 +229,7 @@ export default function LoginPage() {
                   </div>
 
                   <p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400">
-                    Signing up creates an employee account — admin roles are assigned by your
+                    Signing up creates an employee account â€” admin roles are assigned by your
                     workspace administrator later.
                   </p>
 
@@ -325,3 +325,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
