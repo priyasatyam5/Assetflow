@@ -1,5 +1,23 @@
 import apiClient from './apiClient.js';
 
+/** Fetch list of all assets for the dropdown */
+export async function fetchAssets() {
+  const { data } = await apiClient.get('/assets');
+  return data;
+}
+
+/** Fetch list of all employees/users for the dropdown */
+export async function fetchEmployees() {
+  const { data } = await apiClient.get('/employees');
+  return data;
+}
+
+/** Fetch list of all departments for the dropdown */
+export async function fetchDepartments() {
+  const { data } = await apiClient.get('/departments');
+  return data;
+}
+
 /**
  * Fetch allocation status for a specific asset.
  * Returns { allocated: boolean, allocation: { asset, employee, department, ... } | null }
@@ -28,7 +46,7 @@ export async function createAllocation(payload) {
 
 /**
  * Submit a transfer request.
- * Payload: { assetId, currentAllocationId, toEmployeeId, toDepartmentId, reason }
+ * Payload: { assetId, currentAllocationId, toEmployeeId, reason }
  */
 export async function submitTransferRequest(payload) {
   const { data } = await apiClient.post('/transfer-requests', payload);

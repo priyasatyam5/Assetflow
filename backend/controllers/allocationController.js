@@ -24,6 +24,7 @@ exports.createAllocation = async (req, res) => {
         error: "Asset already allocated",
         message: `Asset already allocated to ${activeAllocation.employee?.name || 'Unknown'} (${activeAllocation.department?.name || 'Unknown'})`,
         currentHolder: {
+          id: activeAllocation.id,
           employeeName: activeAllocation.employee?.name,
           departmentName: activeAllocation.department?.name,
           allocationDate: activeAllocation.createdAt,

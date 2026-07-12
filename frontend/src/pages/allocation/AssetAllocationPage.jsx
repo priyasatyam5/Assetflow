@@ -12,6 +12,9 @@ import {
   FiRefreshCw,
 } from 'react-icons/fi';
 import {
+  fetchAssets,
+  fetchEmployees,
+  fetchDepartments,
   fetchAllocationStatus,
   fetchAllocationHistory,
   createAllocation,
@@ -19,25 +22,13 @@ import {
 } from '../../services/allocationService.js';
 import Toast from '../../components/common/Toast.jsx';
 
-// ---------- mock data helpers ----------
-const ASSETS = [
-  { id: 'asset-1', name: 'Dell Latitude 5440', tag: 'AF-0114' },
-  { id: 'asset-2', name: 'Dell Monitor 27"', tag: 'AF-0201' },
-  { id: 'asset-3', name: 'Epson Projector', tag: 'AF-0062' },
-  { id: 'asset-4', name: 'MacBook Pro 16"', tag: 'AF-0330' },
-  { id: 'asset-5', name: 'Ergonomic Office Chair', tag: 'AF-0202' },
-];
-
-const EMPLOYEES = [
-  { id: 'emp-1', name: 'Priya Shah', department: 'Engineering' },
-  { id: 'emp-2', name: 'Raj Patel', department: 'Engineering' },
-  { id: 'emp-3', name: 'Kiran Joshi', department: 'Facilities' },
-  { id: 'emp-4', name: 'Sana Iqbal', department: 'HR' },
-  { id: 'emp-5', name: 'Aditi Rao', department: 'IT' },
-];
-// ------------------------------------------
-
 export default function AssetAllocationPage() {
+  // ----- Lists from API -----
+  const [assets, setAssets] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [loadingLists, setLoadingLists] = useState(true);
+
   // ----- Form state -----
   const [selectedAssetId, setSelectedAssetId] = useState('');
   const [employeeId, setEmployeeId] = useState('');
@@ -60,12 +51,29 @@ export default function AssetAllocationPage() {
   const addToast = useCallback((message, type) => {
     const id = Date.now().toString();
     setToasts((prev) => [...prev, { id, message, type: type || 'success' }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000);
   }, []);
   const dismissToast = useCallback((id) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  // ----- Fetch dropdown data on mount -----
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingLists(true);
+    Promise.all([
+      fetchAssets().catch(() => []),
+      fetchEmployees().catch(() => []),
+      fetchDepartments().catch(() => []),
+    ]).then(([a, e, d]) => {
+      if (cancelled) return;
+      setAssets(a);
+      setEmployees(e);
+      setDepartments(d);
+    }).finally(() => {
+      if (!cancelled) setLoadingLists(false);
+    });
+    return () => { cancelled = true; };
   }, []);
 
   // ----- When asset changes, fetch status + history -----
@@ -79,37 +87,20 @@ export default function AssetAllocationPage() {
     }
 
     let cancelled = false;
-
     setLoadingStatus(true);
     setLoadingHistory(true);
 
     fetchAllocationStatus(selectedAssetId)
-      .then((data) => {
-        if (!cancelled) setAllocationStatus(data);
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setAllocationStatus({ allocated: false, allocation: null });
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingStatus(false);
-      });
+      .then((data) => { if (!cancelled) setAllocationStatus(data); })
+      .catch(() => { if (!cancelled) setAllocationStatus({ allocated: false, allocation: null }); })
+      .finally(() => { if (!cancelled) setLoadingStatus(false); });
 
     fetchAllocationHistory(selectedAssetId)
-      .then((data) => {
-        if (!cancelled) setAllocationHistory(data);
-      })
-      .catch(() => {
-        if (!cancelled) setAllocationHistory([]);
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingHistory(false);
-      });
+      .then((data) => { if (!cancelled) setAllocationHistory(data); })
+      .catch(() => { if (!cancelled) setAllocationHistory([]); })
+      .finally(() => { if (!cancelled) setLoadingHistory(false); });
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [selectedAssetId]);
 
   const resetForm = useCallback(() => {
@@ -145,14 +136,16 @@ export default function AssetAllocationPage() {
     } catch (err) {
       const msg = err?.response?.data?.message || err?.response?.data?.error || 'Failed to allocate asset.';
       addToast(msg, 'error');
-      if (err?.response?.status === 409 && err?.response?.data) {
+      // If 409 conflict, switch UI to transfer mode with the allocation id
+      if (err?.response?.status === 409 && err?.response?.data?.currentHolder) {
+        const holder = err.response.data.currentHolder;
         setAllocationStatus({
           allocated: true,
           allocation: {
-            asset: { id: selectedAssetId },
-            employee: { name: err.response.data.currentHolder?.employeeName || 'Unknown' },
-            department: { name: err.response.data.currentHolder?.departmentName || 'Unknown' },
-            allocatedAt: err.response.data.currentHolder?.allocationDate,
+            id: holder.id,
+            employee: { name: holder.employeeName || 'Unknown' },
+            department: { name: holder.departmentName || 'Unknown' },
+            allocatedAt: holder.allocationDate,
           },
         });
       }
@@ -179,12 +172,11 @@ export default function AssetAllocationPage() {
         toEmployeeId: transferToEmployeeId,
         reason: transferReason,
       });
-      addToast('Transfer request submitted successfully!', 'success');
+      addToast('Transfer request submitted (status: Requested).', 'success');
       setTransferToEmployeeId('');
       setTransferReason('');
     } catch (err) {
-      const msg = err?.response?.data?.error || 'Failed to submit transfer request.';
-      addToast(msg, 'error');
+      addToast(err?.response?.data?.error || 'Failed to submit transfer request.', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -212,7 +204,7 @@ export default function AssetAllocationPage() {
         className="mb-6"
       >
         <h1 className="font-display text-2xl font-bold text-ink dark:text-ink-dark">
-          Allocation and Transfer
+          Allocation &amp; Transfer
         </h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Allocate assets to employees or submit transfer requests.
@@ -233,11 +225,12 @@ export default function AssetAllocationPage() {
               resetForm();
             }}
             className="input-field pl-10"
+            disabled={loadingLists}
           >
-            <option value="">Choose an asset...</option>
-            {ASSETS.map((a) => (
+            <option value="">{loadingLists ? 'Loading assets...' : 'Choose an asset...'}</option>
+            {assets.map((a) => (
               <option key={a.id} value={a.id}>
-                {a.tag} - {a.name}
+                {a.assetTag || ''} - {a.name}
               </option>
             ))}
           </select>
@@ -264,7 +257,7 @@ export default function AssetAllocationPage() {
                 <p className="mt-1 text-sm text-rose-600 dark:text-rose-400">
                   <strong>{currentHolder?.employee?.name || 'Unknown'}</strong> (
                   {currentHolder?.department?.name || 'Unknown department'}
-                  ) - Direct re-allocation is blocked. Submit a transfer request below.
+                  ) &mdash; Direct re-allocation is blocked. Submit a transfer request below.
                 </p>
               </div>
             </div>
@@ -324,13 +317,13 @@ export default function AssetAllocationPage() {
                         className="input-field pl-10"
                       >
                         <option value="">Select employee...</option>
-                        {EMPLOYEES.filter(
-                          (e) => e.id !== currentHolder?.employee?.id
-                        ).map((e) => (
-                          <option key={e.id} value={e.id}>
-                            {e.name} - {e.department}
-                          </option>
-                        ))}
+                        {employees
+                          .filter((e) => e.id !== currentHolder?.employee?.id)
+                          .map((e) => (
+                            <option key={e.id} value={e.id}>
+                              {e.name} - {e.department?.name || ''}
+                            </option>
+                          ))}
                       </select>
                     </div>
                   </div>
@@ -355,15 +348,9 @@ export default function AssetAllocationPage() {
                   className="btn-gradient mt-5 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? (
-                    <>
-                      <span className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-                      Submitting...
-                    </>
+                    <><span className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" /> Submitting...</>
                   ) : (
-                    <>
-                      <FiSend />
-                      Submit Transfer Request
-                    </>
+                    <><FiSend /> Submit Transfer Request</>
                   )}
                 </button>
               </div>
@@ -388,9 +375,9 @@ export default function AssetAllocationPage() {
                         className="input-field pl-10"
                       >
                         <option value="">Select employee...</option>
-                        {EMPLOYEES.map((e) => (
+                        {employees.map((e) => (
                           <option key={e.id} value={e.id}>
-                            {e.name} - {e.department}
+                            {e.name} - {e.department?.name || ''}
                           </option>
                         ))}
                       </select>
@@ -407,11 +394,11 @@ export default function AssetAllocationPage() {
                       className="input-field"
                     >
                       <option value="">Select department...</option>
-                      <option value="Engineering">Engineering</option>
-                      <option value="HR">HR</option>
-                      <option value="Finance">Finance</option>
-                      <option value="Facilities">Facilities</option>
-                      <option value="IT">IT</option>
+                      {departments.map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -437,15 +424,9 @@ export default function AssetAllocationPage() {
                   className="btn-gradient mt-5 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? (
-                    <>
-                      <span className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-                      Allocating...
-                    </>
+                    <><span className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" /> Allocating...</>
                   ) : (
-                    <>
-                      <FiArrowRight />
-                      Allocate Asset
-                    </>
+                    <><FiArrowRight /> Allocate Asset</>
                   )}
                 </button>
               </div>

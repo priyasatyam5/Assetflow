@@ -8,6 +8,7 @@ const { transferRouter } = require('./routes/allocation');
 const auditRoutes = require('./routes/audit');
 const reportRoutes = require('./routes/reports');
 const notificationRoutes = require('./routes/notificationsRoute');
+const listingRoutes = require('./routes/listings');
 const { sequelize } = require('./db');
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use('/api/transfer-requests', transferRouter);
 app.use('/api/audit-cycles', auditRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api', listingRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Assetflow backend is running' });
