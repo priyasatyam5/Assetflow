@@ -1,25 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-<<<<<<< HEAD
-const express = require('express');
-=======
 const authRoutes = require('./routes/auth');
+const dashboardRoutes = require('./routes/dashboard');
 const { sequelize } = require('./db');
->>>>>>> 09f87ec16b88df6a224d59138282bbf6aebbf819
 
 dotenv.config();
 
 const app = express();
-<<<<<<< HEAD
-app.use(express.json());
-
-// ✅ Import your dashboard routes
-const dashboardRoutes = require('./routes/dashboard');
-app.use('/api/dashboard', dashboardRoutes);
-
-// Fallback route (your original message)
-=======
 const basePort = Number(process.env.APP_PORT || 3000);
 
 app.use(cors({
@@ -28,36 +16,34 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
->>>>>>> 09f87ec16b88df6a224d59138282bbf6aebbf819
 app.get('/', (req, res) => {
   res.json({ message: 'Assetflow backend is running' });
 });
 
-<<<<<<< HEAD
-const basePort = Number(process.env.APP_PORT || 3000);
-let currentPort = basePort;
-
-const server = http.createServer(app);
-
-const startServer = (port) => {
-  server.listen(port, '0.0.0.0', () => {
-    console.log(`Server running on http://localhost:${port}`);
-  });
-=======
 const startServer = async (port) => {
   try {
     await sequelize.authenticate();
     console.log('Database connection established.');
-
-    app.listen(port, '0.0.0.0', () => {
-      console.log(`Server running on http://localhost:${port}`);
-    });
   } catch (error) {
+    console.warn('Database connection unavailable, continuing without it:', error.message);
+  }
+
+  const server = app.listen(port, '0.0.0.0', () => {
+    console.log(`Server running on http://localhost:${port}`);
+  });
+
+  server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE' && port === basePort) {
+      console.warn(`Port ${port} is busy, trying ${port + 1} instead.`);
+      server.close(() => startServer(port + 1));
+      return;
+    }
+
     console.error('Failed to start server:', error.message);
     process.exit(1);
-  }
->>>>>>> 09f87ec16b88df6a224d59138282bbf6aebbf819
+  });
 };
 
 startServer(basePort);

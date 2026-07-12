@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { getDashboardSummary } from '../../services/dashboardService.js';
 import { FiBox, FiGrid, FiUsers, FiShield, FiActivity, FiLogOut, FiSearch, FiBell, FiPlus, FiArrowUpRight } from 'react-icons/fi';
 
 const QUICK_STATS = [
@@ -21,8 +23,33 @@ const QUICK_ACTIONS = [
   { label: 'Run Report', icon: FiActivity, desc: 'Generate insights' },
 ];
 
-export default function DashboardPage() {
+export default function DashboardPage() { 
   const { user, logout } = useAuth();
+  const [dashboardData, setDashboardData] = useState({ stats: QUICK_STATS, recentActivity: RECENT_ACTIVITY });
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadDashboard = async () => {
+      try {
+        const data = await getDashboardSummary();
+        if (mounted) {
+          setDashboardData(data);
+        }
+      } catch (error) {
+        console.error('Unable to load dashboard data', error);
+      }
+    };
+
+    loadDashboard();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const stats = dashboardData?.stats || QUICK_STATS;
+  const recentActivity = dashboardData?.recentActivity || RECENT_ACTIVITY;
 
   return (
     <div className="min-h-screen bg-surface dark:bg-surface-dark transition-colors duration-300">
@@ -93,7 +120,7 @@ export default function DashboardPage() {
 
         {/* Quick stats */}
         <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {QUICK_STATS.map((stat) => (
+          {stats.map((stat) => (
             <div
               key={stat.label}
               className="glass-panel rounded-xl2 p-5 transition-all duration-200 hover:shadow-glass-lg hover:-translate-y-0.5"
@@ -127,7 +154,7 @@ export default function DashboardPage() {
               Recent Activity
             </h2>
             <div className="space-y-1">
-              {RECENT_ACTIVITY.map((item, i) => (
+              {recentActivity.map((item, i) => (
                 <div
                   key={i}
                   className="flex items-center justify-between rounded-xl px-4 py-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/40"
