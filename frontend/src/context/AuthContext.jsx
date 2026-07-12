@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react';
-import { loginRequest } from '../services/authService.js';
+import { loginRequest, registerRequest } from '../services/authService.js';
 
 const AuthContext = createContext(null);
 
@@ -12,12 +12,26 @@ export function AuthProvider({ children }) {
     setIsAuthenticating(true);
     setAuthError(null);
     try {
-      // Placeholder API call — backend team will wire the real endpoint.
       const response = await loginRequest({ email, password, remember });
       setUser(response.user);
       return response;
     } catch (err) {
-      setAuthError(err?.message || 'Unable to sign in. Please try again.');
+      setAuthError(err?.response?.data?.message || err?.message || 'Unable to sign in. Please try again.');
+      throw err;
+    } finally {
+      setIsAuthenticating(false);
+    }
+  }, []);
+
+  const register = useCallback(async (payload) => {
+    setIsAuthenticating(true);
+    setAuthError(null);
+    try {
+      const response = await registerRequest(payload);
+      setUser(response.user);
+      return response;
+    } catch (err) {
+      setAuthError(err?.response?.data?.message || err?.message || 'Unable to register. Please try again.');
       throw err;
     } finally {
       setIsAuthenticating(false);
@@ -25,12 +39,14 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    window.localStorage.removeItem('assetflow-token');
+    window.localStorage.removeItem('assetflow-remember');
     setUser(null);
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticating, authError, login, logout, isAuthenticated: !!user }}
+      value={{ user, isAuthenticating, authError, login, register, logout, isAuthenticated: !!user }}
     >
       {children}
     </AuthContext.Provider>

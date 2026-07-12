@@ -4,7 +4,7 @@ import axios from 'axios';
 // The Express backend base URL will be supplied via environment variable
 // once the backend team publishes it. For now this is a placeholder.
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
