@@ -4,7 +4,7 @@ import LoginPage from './pages/auth/LoginPage.jsx';
 import DashboardPage from './pages/dashboard/DashboardPage.jsx';
 import AssetAllocationPage from './pages/allocation/AssetAllocationPage.jsx';
 import ProtectedRoute from './routes/ProtectedRoute.jsx';
-
+import MaintenancePage from "./pages/maintenance/MaintenancePage";
 function App() {
   return (
     <AnimatePresence mode="wait">
@@ -26,6 +26,11 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/maintenance"
+          element={<MaintenancePage />}
+        />
+
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
