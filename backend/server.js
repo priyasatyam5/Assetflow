@@ -9,7 +9,6 @@ const auditRoutes = require('./routes/audit');
 const reportRoutes = require('./routes/reports');
 const notificationRoutes = require('./routes/notificationsRoute');
 const listingRoutes = require('./routes/listings');
-const allocationRoutes = require('./routes/allocation');
 
 // New entities routes
 const assetRoutes = require('./routes/assets');
