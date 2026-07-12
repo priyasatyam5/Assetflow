@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMail, FiLock, FiUser, FiMoon, FiSun, FiArrowRight, FiBox } from 'react-icons/fi';
@@ -9,7 +10,6 @@ import { ToastContainer } from '../../components/common/Toast.jsx';
 import { useToast } from '../../hooks/useToast.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useTheme } from '../../context/ThemeContext.jsx';
-import { registerRequest } from '../../services/authService.js';
 
 const STATS = [
   { value: '12,400+', label: 'Assets tracked' },
@@ -19,13 +19,14 @@ const STATS = [
 
 export default function LoginPage() {
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
-  const { login, isAuthenticating } = useAuth();
+  const navigate = useNavigate();
+  const { login, register, isAuthenticating } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { toasts, showToast, dismissToast } = useToast();
   const [isRegistering, setIsRegistering] = useState(false);
 
   const {
-    register,
+    register: formRegister,
     handleSubmit,
     formState: { errors },
     reset,
@@ -39,6 +40,7 @@ export default function LoginPage() {
         remember: !!values.remember,
       });
       showToast('Welcome back! Redirecting to your dashboard…', 'success');
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       showToast(err?.message || 'Incorrect email or password.', 'error');
     }
@@ -47,12 +49,15 @@ export default function LoginPage() {
   const onSignUp = async (values) => {
     setIsRegistering(true);
     try {
-      const res = await registerRequest(values);
+      const res = await register(values);
       showToast(res.message || 'Account created successfully.', 'success');
       reset();
       setMode('signin');
     } catch (err) {
-      showToast(err?.message || 'Could not create account. Try again.', 'error');
+      showToast(
+        err?.response?.data?.message || err?.message || 'Could not create account. Try again.',
+        'error',
+      );
     } finally {
       setIsRegistering(false);
     }
@@ -112,8 +117,8 @@ export default function LoginPage() {
                 Manage Enterprise Assets, Smarter.
               </h2>
               <p className="max-w-sm text-sm text-white/80">
-                One workspace to register, allocate, transfer, and maintain every
-                asset and resource across your organization — in real time.
+                One workspace to register, allocate, transfer, and maintain every asset and resource
+                across your organization — in real time.
               </p>
               <div className="flex gap-6 border-t border-white/20 pt-5">
                 {STATS.map((s) => (
@@ -161,7 +166,7 @@ export default function LoginPage() {
                       type="email"
                       placeholder="name@company.com"
                       error={errors.email?.message}
-                      {...register('email', {
+                      {...formRegister('email', {
                         required: 'Email is required',
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -175,9 +180,12 @@ export default function LoginPage() {
                       type="password"
                       placeholder="Enter your password"
                       error={errors.password?.message}
-                      {...register('password', {
+                      {...formRegister('password', {
                         required: 'Password is required',
-                        minLength: { value: 6, message: 'Minimum 6 characters' },
+                        minLength: {
+                          value: 6,
+                          message: 'Minimum 6 characters',
+                        },
                       })}
                     />
 
@@ -186,13 +194,15 @@ export default function LoginPage() {
                         <input
                           type="checkbox"
                           className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/30"
-                          {...register('remember')}
+                          {...formRegister('remember')}
                         />
                         Remember me
                       </label>
                       <button
                         type="button"
-                        onClick={() => showToast('Password reset link sent if the account exists.', 'info')}
+                        onClick={() =>
+                          showToast('Password reset link sent if the account exists.', 'info')
+                        }
                         className="font-medium text-primary hover:text-primary-600 transition-colors"
                       >
                         Forgot password?
@@ -212,13 +222,15 @@ export default function LoginPage() {
 
                   <div className="mt-8 flex items-center gap-3">
                     <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
-                    <span className="text-xs uppercase tracking-wide text-slate-400">New here?</span>
+                    <span className="text-xs uppercase tracking-wide text-slate-400">
+                      New here?
+                    </span>
                     <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
                   </div>
 
                   <p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400">
-                    Signing up creates an employee account — admin roles are
-                    assigned by your workspace administrator later.
+                    Signing up creates an employee account — admin roles are assigned by your
+                    workspace administrator later.
                   </p>
 
                   <Button
@@ -242,7 +254,7 @@ export default function LoginPage() {
                     Create your account
                   </h1>
                   <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
-                    You'll get employee access. Admins can promote your role anytime.
+                    You&apos;ll get employee access. Admins can promote your role anytime.
                   </p>
 
                   <form onSubmit={handleSubmit(onSignUp)} className="mt-8 space-y-5" noValidate>
@@ -251,7 +263,9 @@ export default function LoginPage() {
                       icon={FiUser}
                       placeholder="Priya Shah"
                       error={errors.name?.message}
-                      {...register('name', { required: 'Full name is required' })}
+                      {...formRegister('name', {
+                        required: 'Full name is required',
+                      })}
                     />
                     <Input
                       label="Work email"
@@ -259,7 +273,7 @@ export default function LoginPage() {
                       type="email"
                       placeholder="name@company.com"
                       error={errors.email?.message}
-                      {...register('email', {
+                      {...formRegister('email', {
                         required: 'Email is required',
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -273,9 +287,12 @@ export default function LoginPage() {
                       type="password"
                       placeholder="Create a password"
                       error={errors.password?.message}
-                      {...register('password', {
+                      {...formRegister('password', {
                         required: 'Password is required',
-                        minLength: { value: 6, message: 'Minimum 6 characters' },
+                        minLength: {
+                          value: 6,
+                          message: 'Minimum 6 characters',
+                        },
                       })}
                     />
 
