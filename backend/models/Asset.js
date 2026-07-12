@@ -10,12 +10,12 @@ const Asset = sequelize.define('Asset', {
   name: DataTypes.STRING,
   assetTag: {
     type: DataTypes.STRING,
-    unique: true,
+    // unique: true,   // commented out - DB-level UNIQUE constraint in schema may still apply
     field: 'asset_tag',
   },
   serialNumber: {
     type: DataTypes.STRING,
-    unique: true,
+    // unique: true,   // commented out - DB-level UNIQUE constraint in schema may still apply
     field: 'serial_number',
   },
   categoryId: {

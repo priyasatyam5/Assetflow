@@ -99,6 +99,7 @@ CREATE TABLE `transfer_requests` (
   `target_type` varchar(255),
   `target_employee_id` uuid,
   `target_department_id` uuid,
+  `reason` text,
   `status` varchar(255),
   `reviewed_by_id` uuid,
   `review_notes` text,

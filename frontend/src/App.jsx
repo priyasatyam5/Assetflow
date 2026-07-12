@@ -4,6 +4,7 @@ import LoginPage from './pages/auth/LoginPage.jsx';
 import DashboardLayout from './layouts/DashboardLayout.jsx';
 import DashboardPage from './pages/dashboard/DashboardPage.jsx';
 import AssetAllocationPage from './pages/allocation/AssetAllocationPage.jsx';
+import AssetDirectoryPage from './pages/assets/AssetDirectoryPage.jsx';
 import AuditPage from './pages/audit/AuditPage.jsx';
 import ReportsPage from './pages/reports/ReportsPage.jsx';
 import NotificationsPage from './pages/notifications/NotificationsPage.jsx';
@@ -27,17 +28,15 @@ function App() {
         >
           <Route index element={<DashboardPage />} />
           <Route path="allocation" element={<AssetAllocationPage />} />
+          <Route path="assets" element={<AssetDirectoryPage />} />
           <Route path="audit" element={<AuditPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           {/* Catch-all: redirect unknown sidebar paths back to dashboard */}
+          <Route path="maintenance" element={<MaintenancePage />} />
+          {/* Catch-all: redirect unknown sidebar paths back to dashboard */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
-
-        <Route
-          path="/maintenance"
-          element={<MaintenancePage />}
-        />
 
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -79,9 +79,7 @@ export default function MaintenancePage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface dark:bg-surface-dark p-8">
-
-      <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl">
 
         <h1 className="text-3xl font-bold mb-2 text-ink dark:text-white">
           Maintenance Management
@@ -385,9 +383,6 @@ export default function MaintenancePage() {
           </table>
 
         </div>
-
       </div>
-
-    </div>
   );
 }
