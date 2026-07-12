@@ -1,5 +1,6 @@
 import { useAuth } from '../../context/AuthContext.jsx';
 import { FiBox, FiGrid, FiUsers, FiShield, FiActivity, FiLogOut, FiSearch, FiBell, FiPlus, FiArrowUpRight } from 'react-icons/fi';
+import { NAV_ITEMS } from '../../utils/mockData.js';
 
 const QUICK_STATS = [
   { label: 'Total Assets', value: '12,485', change: '+4.2%', icon: FiBox, color: 'text-primary' },
@@ -81,15 +82,43 @@ export default function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-7xl px-6 py-8">
-        {/* Welcome */}
-        <div className="mb-8">
-          <h1 className="font-display text-2xl font-bold text-ink dark:text-ink-dark">
-            Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}
-          </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Here&apos;s what&apos;s happening across your organization today.
-          </p>
-        </div>
+        <div className="grid gap-6 xl:grid-cols-[260px_1fr]">
+          {/* Sidebar */}
+          <aside className="glass-panel rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm dark:border-slate-700/80 dark:bg-slate-900/80">
+            <div className="mb-8 flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-primary text-white shadow-glow">
+                <FiBox className="text-xl" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-ink dark:text-ink-dark">AssetFlow</p>
+                <p className="text-xs text-slate-400">Enterprise Asset Management</p>
+              </div>
+            </div>
+
+            <nav className="space-y-2">
+              {NAV_ITEMS.map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-600 transition-all hover:bg-slate-100 hover:text-ink dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                >
+                  <item.icon className="text-base" />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </nav>
+          </aside>
+
+          <section>
+            {/* Welcome */}
+            <div className="mb-8">
+              <h1 className="font-display text-2xl font-bold text-ink dark:text-ink-dark">
+                Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}
+              </h1>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                Here&apos;s what&apos;s happening across your organization today.
+              </p>
+            </div>
 
         {/* Quick stats */}
         <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -171,6 +200,8 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
         </div>
       </main>
     </div>
