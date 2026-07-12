@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -11,27 +12,54 @@ import { useToast } from '../../hooks/useToast.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useTheme } from '../../context/ThemeContext.jsx';
 import { registerRequest } from '../../services/authService.js';
+=======
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FiMail,
+  FiLock,
+  FiUser,
+  FiMoon,
+  FiSun,
+  FiArrowRight,
+  FiBox,
+} from "react-icons/fi";
+import Input from "../../components/common/Input.jsx";
+import Button from "../../components/common/Button.jsx";
+import FlowIllustration from "../../components/common/FlowIllustration.jsx";
+import { ToastContainer } from "../../components/common/Toast.jsx";
+import { useToast } from "../../hooks/useToast.js";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { useTheme } from "../../context/ThemeContext.jsx";
+import { registerRequest } from "../../services/authService.js";
+>>>>>>> 122f63b0422a496eccbcb6e6eabb3ff6c07093af
 
 const STATS = [
-  { value: '12,400+', label: 'Assets tracked' },
-  { value: '38', label: 'Departments' },
-  { value: '99.9%', label: 'Uptime' },
+  { value: "12,400+", label: "Assets tracked" },
+  { value: "38", label: "Departments" },
+  { value: "99.9%", label: "Uptime" },
 ];
 
 export default function LoginPage() {
+<<<<<<< HEAD
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const navigate = useNavigate();
   const { login, isAuthenticating } = useAuth();
+=======
+  const [mode, setMode] = useState("signin"); // 'signin' | 'signup'
+  const { login, register, isAuthenticating } = useAuth();
+>>>>>>> 122f63b0422a496eccbcb6e6eabb3ff6c07093af
   const { theme, toggleTheme } = useTheme();
   const { toasts, showToast, dismissToast } = useToast();
   const [isRegistering, setIsRegistering] = useState(false);
 
   const {
-    register,
+    register: formRegister,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm({ mode: 'onBlur' });
+  } = useForm({ mode: "onBlur" });
 
   const onSignIn = async (values) => {
     try {
@@ -40,22 +68,31 @@ export default function LoginPage() {
         password: values.password,
         remember: !!values.remember,
       });
+<<<<<<< HEAD
       showToast('Welcome back! Redirecting to your dashboard…', 'success');
       navigate('/dashboard', { replace: true });
+=======
+      showToast("Welcome back! Redirecting to your dashboard…", "success");
+>>>>>>> 122f63b0422a496eccbcb6e6eabb3ff6c07093af
     } catch (err) {
-      showToast(err?.message || 'Incorrect email or password.', 'error');
+      showToast(err?.message || "Incorrect email or password.", "error");
     }
   };
 
   const onSignUp = async (values) => {
     setIsRegistering(true);
     try {
-      const res = await registerRequest(values);
-      showToast(res.message || 'Account created successfully.', 'success');
+      const res = await register(values);
+      showToast(res.message || "Account created successfully.", "success");
       reset();
-      setMode('signin');
+      setMode("signin");
     } catch (err) {
-      showToast(err?.message || 'Could not create account. Try again.', 'error');
+      showToast(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Could not create account. Try again.",
+        "error",
+      );
     } finally {
       setIsRegistering(false);
     }
@@ -84,7 +121,7 @@ export default function LoginPage() {
             exit={{ rotate: 90, opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {theme === 'dark' ? <FiSun /> : <FiMoon />}
+            {theme === "dark" ? <FiSun /> : <FiMoon />}
           </motion.span>
         </AnimatePresence>
       </button>
@@ -93,7 +130,7 @@ export default function LoginPage() {
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
           className="grid w-full overflow-hidden rounded-xl2 shadow-glass-lg lg:grid-cols-2"
         >
           {/* Brand / Illustration panel */}
@@ -103,7 +140,9 @@ export default function LoginPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-md">
                 <FiBox className="text-xl" />
               </div>
-              <span className="font-display text-xl font-bold tracking-tight">AssetFlow</span>
+              <span className="font-display text-xl font-bold tracking-tight">
+                AssetFlow
+              </span>
             </div>
 
             <div className="relative z-10 my-6">
@@ -115,8 +154,9 @@ export default function LoginPage() {
                 Manage Enterprise Assets, Smarter.
               </h2>
               <p className="max-w-sm text-sm text-white/80">
-                One workspace to register, allocate, transfer, and maintain every
-                asset and resource across your organization — in real time.
+                One workspace to register, allocate, transfer, and maintain
+                every asset and resource across your organization — in real
+                time.
               </p>
               <div className="flex gap-6 border-t border-white/20 pt-5">
                 {STATS.map((s) => (
@@ -142,13 +182,13 @@ export default function LoginPage() {
             </div>
 
             <AnimatePresence mode="wait">
-              {mode === 'signin' ? (
+              {mode === "signin" ? (
                 <motion.div
                   key="signin"
                   initial={{ opacity: 0, x: 24 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -24 }}
-                  transition={{ duration: 0.28, ease: 'easeOut' }}
+                  transition={{ duration: 0.28, ease: "easeOut" }}
                 >
                   <h1 className="font-display text-2xl font-bold text-ink dark:text-ink-dark">
                     Welcome back
@@ -157,18 +197,22 @@ export default function LoginPage() {
                     Sign in to continue to your workspace.
                   </p>
 
-                  <form onSubmit={handleSubmit(onSignIn)} className="mt-8 space-y-5" noValidate>
+                  <form
+                    onSubmit={handleSubmit(onSignIn)}
+                    className="mt-8 space-y-5"
+                    noValidate
+                  >
                     <Input
                       label="Email"
                       icon={FiMail}
                       type="email"
                       placeholder="name@company.com"
                       error={errors.email?.message}
-                      {...register('email', {
-                        required: 'Email is required',
+                      {...formRegister("email", {
+                        required: "Email is required",
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                          message: 'Enter a valid email address',
+                          message: "Enter a valid email address",
                         },
                       })}
                     />
@@ -178,9 +222,12 @@ export default function LoginPage() {
                       type="password"
                       placeholder="Enter your password"
                       error={errors.password?.message}
-                      {...register('password', {
-                        required: 'Password is required',
-                        minLength: { value: 6, message: 'Minimum 6 characters' },
+                      {...formRegister("password", {
+                        required: "Password is required",
+                        minLength: {
+                          value: 6,
+                          message: "Minimum 6 characters",
+                        },
                       })}
                     />
 
@@ -189,13 +236,18 @@ export default function LoginPage() {
                         <input
                           type="checkbox"
                           className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/30"
-                          {...register('remember')}
+                          {...formRegister("remember")}
                         />
                         Remember me
                       </label>
                       <button
                         type="button"
-                        onClick={() => showToast('Password reset link sent if the account exists.', 'info')}
+                        onClick={() =>
+                          showToast(
+                            "Password reset link sent if the account exists.",
+                            "info",
+                          )
+                        }
                         className="font-medium text-primary hover:text-primary-600 transition-colors"
                       >
                         Forgot password?
@@ -215,7 +267,9 @@ export default function LoginPage() {
 
                   <div className="mt-8 flex items-center gap-3">
                     <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
-                    <span className="text-xs uppercase tracking-wide text-slate-400">New here?</span>
+                    <span className="text-xs uppercase tracking-wide text-slate-400">
+                      New here?
+                    </span>
                     <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
                   </div>
 
@@ -228,7 +282,7 @@ export default function LoginPage() {
                     variant="outline"
                     size="lg"
                     className="mt-3 w-full"
-                    onClick={() => setMode('signup')}
+                    onClick={() => setMode("signup")}
                   >
                     Create Account
                   </Button>
@@ -239,22 +293,29 @@ export default function LoginPage() {
                   initial={{ opacity: 0, x: 24 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -24 }}
-                  transition={{ duration: 0.28, ease: 'easeOut' }}
+                  transition={{ duration: 0.28, ease: "easeOut" }}
                 >
                   <h1 className="font-display text-2xl font-bold text-ink dark:text-ink-dark">
                     Create your account
                   </h1>
                   <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
-                    You'll get employee access. Admins can promote your role anytime.
+                    You'll get employee access. Admins can promote your role
+                    anytime.
                   </p>
 
-                  <form onSubmit={handleSubmit(onSignUp)} className="mt-8 space-y-5" noValidate>
+                  <form
+                    onSubmit={handleSubmit(onSignUp)}
+                    className="mt-8 space-y-5"
+                    noValidate
+                  >
                     <Input
                       label="Full name"
                       icon={FiUser}
                       placeholder="Priya Shah"
                       error={errors.name?.message}
-                      {...register('name', { required: 'Full name is required' })}
+                      {...formRegister("name", {
+                        required: "Full name is required",
+                      })}
                     />
                     <Input
                       label="Work email"
@@ -262,11 +323,11 @@ export default function LoginPage() {
                       type="email"
                       placeholder="name@company.com"
                       error={errors.email?.message}
-                      {...register('email', {
-                        required: 'Email is required',
+                      {...formRegister("email", {
+                        required: "Email is required",
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                          message: 'Enter a valid email address',
+                          message: "Enter a valid email address",
                         },
                       })}
                     />
@@ -276,9 +337,12 @@ export default function LoginPage() {
                       type="password"
                       placeholder="Create a password"
                       error={errors.password?.message}
-                      {...register('password', {
-                        required: 'Password is required',
-                        minLength: { value: 6, message: 'Minimum 6 characters' },
+                      {...formRegister("password", {
+                        required: "Password is required",
+                        minLength: {
+                          value: 6,
+                          message: "Minimum 6 characters",
+                        },
                       })}
                     />
 
@@ -294,9 +358,9 @@ export default function LoginPage() {
                   </form>
 
                   <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-                    Already have an account?{' '}
+                    Already have an account?{" "}
                     <button
-                      onClick={() => setMode('signin')}
+                      onClick={() => setMode("signin")}
                       className="font-medium text-primary hover:text-primary-600 transition-colors"
                     >
                       Sign in
