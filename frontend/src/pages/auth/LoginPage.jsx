@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMail, FiLock, FiUser, FiMoon, FiSun, FiArrowRight, FiBox } from 'react-icons/fi';
@@ -19,6 +20,7 @@ const STATS = [
 
 export default function LoginPage() {
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
+  const navigate = useNavigate();
   const { login, isAuthenticating } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { toasts, showToast, dismissToast } = useToast();
@@ -39,6 +41,7 @@ export default function LoginPage() {
         remember: !!values.remember,
       });
       showToast('Welcome back! Redirecting to your dashboard…', 'success');
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       showToast(err?.message || 'Incorrect email or password.', 'error');
     }
