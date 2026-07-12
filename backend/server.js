@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
+const allocationRoutes = require('./routes/allocation'); 
 const { sequelize } = require('./db');
 
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/allocations', allocationRoutes); 
 
 app.get('/', (req, res) => {
   res.json({ message: 'Assetflow backend is running' });

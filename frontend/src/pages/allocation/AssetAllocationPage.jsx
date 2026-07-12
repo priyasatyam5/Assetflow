@@ -131,11 +131,33 @@ export default function AssetAllocationPage() {
           </div>
 
           <button
-            className="mt-8 flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-6 py-3"
-          >
-            <FiArrowRight />
-            Allocate Asset
-          </button>
+  onClick={async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/allocations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          asset,
+          employee,
+          department,
+          returnDate,
+        }),
+      });
+
+      const data = await response.json();
+      alert("Asset allocated successfully!");
+      console.log(data);
+    } catch (error) {
+      console.error("Error allocating asset:", error);
+      alert("Failed to allocate asset");
+    }
+  }}
+  className="mt-8 flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-6 py-3"
+>
+  <FiArrowRight />
+  Allocate Asset
+</button>
+
 
         </div>
 
