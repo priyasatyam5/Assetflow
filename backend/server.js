@@ -1,7 +1,9 @@
 const http = require('http');
-const { syncDatabase } = require('./db');
+const dotenv = require('dotenv');
 
-const basePort = Number(process.env.PORT) || 3000;
+dotenv.config();
+
+const basePort = Number(process.env.APP_PORT || 3000);
 const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ message: 'Assetflow backend is running' }));

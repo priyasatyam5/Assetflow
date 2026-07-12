@@ -25,8 +25,10 @@ const sequelize = new Sequelize(connectionString || {
 });
 
 const syncDatabase = async () => {
-  const { default: models } = require('./models');
+  const models = require('./models');
+  await sequelize.authenticate();
   await sequelize.sync({ alter: false });
+  console.log('Database synchronized successfully');
   return models;
 };
 
