@@ -15,6 +15,10 @@ const TransferRequest = sequelize.define('TransferRequest', {
     type: DataTypes.UUID,
     field: 'current_allocation_id',
   },
+  reason: {
+    type: DataTypes.TEXT,
+    field: 'reason',
+  },
   requestedById: {
     type: DataTypes.UUID,
     field: 'requested_by_id',

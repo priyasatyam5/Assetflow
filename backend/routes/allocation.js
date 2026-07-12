@@ -1,89 +1,51 @@
 // backend/routes/allocation.js
 const express = require("express");
 const router = express.Router();
-const { Allocation, Asset, User } = require("../models"); // include related models
+const {
+  createAllocation,
+  getAllocations,
+  getAllocationById,
+  updateAllocation,
+  deleteAllocation,
+  getAllocationStatus,
+  getAllocationHistory,
+  createTransferRequest,
+} = require("../controllers/allocationController");
 
-// Create new allocation
-router.post("/", async (req, res) => {
+// Asset allocation-status (must be before /:id or it catches "allocation-status" as an id)
+router.get("/asset/:id/allocation-status", getAllocationStatus);
+router.get("/asset/:id/allocation-history", getAllocationHistory);
+
+// Standard allocation CRUD
+router.post("/", createAllocation);
+router.get("/", getAllocations);
+router.get("/:id", getAllocationById);
+router.put("/:id", updateAllocation);
+router.delete("/:id", deleteAllocation);
+
+module.exports = router;
+
+// Separate router for transfer requests
+const transferRouter = express.Router();
+const { TransferRequest, Allocation, Asset, User, Department } = require("../models");
+
+transferRouter.post("/", createTransferRequest);
+
+// Get all transfer requests
+transferRouter.get("/", async (req, res) => {
   try {
-    const { asset, employee, department, returnDate } = req.body;
-
-    const newAllocation = await Allocation.create({
-      asset,
-      employee,
-      department,
-      returnDate,
-      status: "active", // default status
-    });
-
-    res.status(201).json(newAllocation);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// Get all allocations (with asset + employee details)
-router.get("/", async (req, res) => {
-  try {
-    const allocations = await Allocation.findAll({
+    const requests = await TransferRequest.findAll({
       include: [
-        { model: Asset, as: "asset" },
-        { model: User, as: "employee" },
+        { model: Asset, as: "asset", attributes: ["id", "name", "assetTag"] },
+        { model: User, as: "targetEmployee", attributes: ["id", "name"] },
+        { model: Department, as: "targetDepartment", attributes: ["id", "name"] },
       ],
       order: [["createdAt", "DESC"]],
     });
-    res.json(allocations);
+    res.json(requests);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Get single allocation by ID
-router.get("/:id", async (req, res) => {
-  try {
-    const allocation = await Allocation.findByPk(req.params.id, {
-      include: [
-        { model: Asset, as: "asset" },
-        { model: User, as: "employee" },
-      ],
-    });
-    if (!allocation) {
-      return res.status(404).json({ error: "Allocation not found" });
-    }
-    res.json(allocation);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Update allocation
-router.put("/:id", async (req, res) => {
-  try {
-    const allocation = await Allocation.findByPk(req.params.id);
-    if (!allocation) {
-      return res.status(404).json({ error: "Allocation not found" });
-    }
-
-    await allocation.update(req.body);
-    res.json(allocation);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// Delete allocation
-router.delete("/:id", async (req, res) => {
-  try {
-    const allocation = await Allocation.findByPk(req.params.id);
-    if (!allocation) {
-      return res.status(404).json({ error: "Allocation not found" });
-    }
-
-    await allocation.destroy();
-    res.json({ message: "Allocation deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-module.exports = router;
+module.exports.transferRouter = transferRouter;
