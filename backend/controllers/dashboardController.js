@@ -1,4 +1,4 @@
-const { Asset, Allocation, Maintenance, User, sequelize } = require("../models");
+const { Asset, Allocation, MaintenanceRequest, User, sequelize } = require("../models");
 const { Op } = require("sequelize");
 
 exports.assetsSummary = async (req, res) => {
@@ -26,10 +26,11 @@ exports.allocationsSummary = async (req, res) => {
 
 exports.maintenanceAlerts = async (req, res) => {
   try {
-    const alerts = await Maintenance.findAll({
-      where: { dueDate: { [Op.gte]: new Date() } },
-      include: [Asset],
-      limit: 10
+    const alerts = await MaintenanceRequest.findAll({
+      where: { status: { [Op.in]: ["pending", "open", "in_progress"] } },
+      include: [{ model: Asset, as: "asset" }],
+      order: [["createdAt", "DESC"]],
+      limit: 10,
     });
     res.json(alerts);
   } catch (err) {
@@ -40,9 +41,12 @@ exports.maintenanceAlerts = async (req, res) => {
 exports.userActivity = async (req, res) => {
   try {
     const activity = await Allocation.findAll({
-      include: [User, Asset],
+      include: [
+        { model: User, as: "employee" },
+        { model: Asset, as: "asset" },
+      ],
       order: [["updatedAt", "DESC"]],
-      limit: 10
+      limit: 10,
     });
     res.json(activity);
   } catch (err) {
@@ -55,9 +59,9 @@ exports.assetTrends = async (req, res) => {
     const trends = await Allocation.findAll({
       attributes: [
         [sequelize.fn("MONTH", sequelize.col("createdAt")), "month"],
-        [sequelize.fn("COUNT", sequelize.col("id")), "allocations"]
+        [sequelize.fn("COUNT", sequelize.col("id")), "allocations"],
       ],
-      group: ["month"]
+      group: ["month"],
     });
     res.json(trends);
   } catch (err) {

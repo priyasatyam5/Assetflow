@@ -2,21 +2,28 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import DashboardPage from './pages/dashboard/DashboardPage.jsx';
+import { useAuth } from './context/AuthContext.jsx';
 import AssetAllocationPage from "./pages/allocation/AssetAllocationPage";
 
 // Protect routes that require authentication
 function ProtectedRoute({ children }) {
-  const token = window.localStorage.getItem('assetflow-token');
-  if (!token) {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated && import.meta.env.DEV) {
+    return children;
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
+
   return children;
 }
 
 // Redirect logged-in users away from auth pages
 function PublicRoute({ children }) {
-  const token = window.localStorage.getItem('assetflow-token');
-  if (token) {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
   return children;

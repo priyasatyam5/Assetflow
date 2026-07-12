@@ -1,8 +1,8 @@
-const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
+const dashboardRoutes = require('./routes/dashboard');
 const { sequelize } = require('./db');
 
 dotenv.config();
@@ -16,38 +16,34 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Assetflow backend is running' });
 });
 
-const listenPort = (port) => {
-  const server = http.createServer(app);
-
-  server.on('error', (error) => {
-    if (error.code === 'EADDRINUSE') {
-      console.warn(`Port ${port} is already in use. Trying ${port + 1} instead.`);
-      listenPort(port + 1);
-    } else {
-      console.error('Failed to start server:', error.message);
-      process.exit(1);
-    }
-  });
-
-  server.listen(port, '0.0.0.0', () => {
-    console.log(`Server running on http://localhost:${port}`);
-  });
-};
-
 const startServer = async (port) => {
   try {
     await sequelize.authenticate();
     console.log('Database connection established.');
-    listenPort(port);
   } catch (error) {
+    console.warn('Database connection unavailable, continuing without it:', error.message);
+  }
+
+  const server = app.listen(port, '0.0.0.0', () => {
+    console.log(`Server running on http://localhost:${port}`);
+  });
+
+  server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE' && port === basePort) {
+      console.warn(`Port ${port} is busy, trying ${port + 1} instead.`);
+      server.close(() => startServer(port + 1));
+      return;
+    }
+
     console.error('Failed to start server:', error.message);
     process.exit(1);
-  }
+  });
 };
 
 startServer(basePort);
