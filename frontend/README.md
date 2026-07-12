@@ -69,12 +69,3 @@ the Express API is ready:
 1. Set `VITE_API_BASE_URL` in a `.env` file.
 2. Flip `MOCK_MODE` to `false` in `authService.js`.
 
-## Status
-
-- [x] Folder structure
-- [x] Dependencies
-- [x] Login Page (sign in / create account, dark mode, validation, toasts)
-- [ ] Dashboard — next step
-- [ ] Organization Setup
-- [ ] Asset Directory
-- [ ] Sidebar / Navbar shell
