@@ -1,15 +1,25 @@
 const http = require('http');
 const dotenv = require('dotenv');
+const express = require('express');
 
 dotenv.config();
 
-const basePort = Number(process.env.APP_PORT || 3000);
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ message: 'Assetflow backend is running' }));
+const app = express();
+app.use(express.json());
+
+// ✅ Import your dashboard routes
+const dashboardRoutes = require('./routes/dashboard');
+app.use('/api/dashboard', dashboardRoutes);
+
+// Fallback route (your original message)
+app.get('/', (req, res) => {
+  res.json({ message: 'Assetflow backend is running' });
 });
 
+const basePort = Number(process.env.APP_PORT || 3000);
 let currentPort = basePort;
+
+const server = http.createServer(app);
 
 const startServer = (port) => {
   server.listen(port, '0.0.0.0', () => {
